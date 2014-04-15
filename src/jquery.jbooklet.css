@@ -1,10 +1,11 @@
 /*
  * jQuery Booklet Plugin
  * Copyright (c) 2010 - 2014 William Grauvogel (http://builtbywill.com/)
+ *                           Eugene Zlobin (http://zlobin.pro)
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 1.4.4
+ * Version : 1.5.0
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -48,14 +49,14 @@
 /* @z-index fix (needed for older IE browsers)
 ----------------------------------------*/
 
-    body              {z-index:0;}
-    .booklet          {z-index:10;}
-    .b-pN             {z-index:10;}
-    .b-p0             {z-index:30;}
-    .b-p1             {z-index:20;}
-    .b-p2             {z-index:20;}
-    .b-p3             {z-index:30;}
-    .b-p4             {z-index:10;}
-    .b-prev           {z-index:40;}
-    .b-next           {z-index:40;}
-    .b-counter        {z-index:40;}
+  body {z-index:0;}
+  .booklet {z-index:10;}
+  .b-pN {z-index:10;}
+  .b-p0 {z-index:30;}
+  .b-p1 {z-index:20;}
+  .b-p2 {z-index:20;}
+  .b-p3 {z-index:30;}
+  .b-p4 {z-index:10;}
+  .b-prev {z-index:40;}
+  .b-next {z-index:40;}
+  .b-counter {z-index:40;}

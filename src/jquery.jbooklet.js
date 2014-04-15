@@ -1,10 +1,11 @@
 /*
- * jQuery Booklet Plugin
+ * jBooklet jQuery Plugin
  * Copyright (c) 2010 - 2014 William Grauvogel (http://builtbywill.com/)
+ *                           Eugene Zlobin (http://zlobin.pro)
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 1.4.4
+ * Version : 1.5.0
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
