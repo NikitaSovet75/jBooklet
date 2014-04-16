@@ -1,14 +1,14 @@
 /*
  * jBooklet jQuery Plugin
- * Copyright (c) 2010 - 2014 William Grauvogel (http://builtbywill.com/)
- *                           Eugene Zlobin (http://zlobin.pro)
+ * Copyright (c) 2014 Eugene Zlobin (http://zlobin.pro)
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 1.5.0
+ * Version : 2.0.0
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
+ *	2) William Grauvogel (http://builtbywill.com/)
  */
 (function (window, $, undefined) {
   'use strict';
