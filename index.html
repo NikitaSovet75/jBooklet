@@ -3,13 +3,18 @@
 <head>
     <meta charset="utf-8">
     <title>jBooklet - jQuery Plugin</title>
-    <!--[if lt IE 9]><script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script><![endif]-->
-    <link href="https://rawgithub.com/Zlobin/jBooklet/dev/src/jquery.jbooklet.css" type="text/css" rel="stylesheet" media="all">
+
+    <!--[if lt IE 9]>
+      <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css" rel="stylesheet" media="all">
+    <link href="https://rawgithub.com/Zlobin/jBooklet/master/src/jquery.jbooklet.css" rel="stylesheet" media="all">
 </head>
 <body>
-	<header>
-		<h1>Booklet Example</h1>
-	</header>
+  <header>
+    <h1>jBooklet Demo</h1>
+  </header>
 
   <div id="mybook">
     <div title="first page">
@@ -41,11 +46,11 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-  <script src="https://rawgit.com/Zlobin/jBooklet/dev/src/jquery.jbooklet.js"></script>
+  <script src="https://rawgit.com/Zlobin/jBooklet/master/src/jquery.jbooklet.js"></script>
 
-	<script>
+  <script>
     $(function() {		
-      $("#mybook").booklet();
+      $('#mybook').booklet();
     });
   </script>
 </body>
