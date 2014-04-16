@@ -97,7 +97,7 @@
       class: 'b-wrap'
     });
     $underWrapper.appendTo($wrapper);
-        
+
     var target = inTarget,
         options = inOptions,
         isInit = false,
@@ -112,10 +112,6 @@
           //transparent item used with closed books
           blank: '<div class="b-page-blank" title=""></div>'
         },
-        directions = {
-          leftToRight: 'LTR',
-          rightToLeft: 'RTL'
-        },
         css = {}, anim = {},
         hoverShadowWidth, hoverFullWidth, hoverCurlWidth,
         pages = [],
@@ -125,18 +121,9 @@
         // page content vars
         pN, p0, p1, p2, p3, p4, pNwrap, p0wrap, p1wrap, p2wrap, p3wrap, p4wrap, wraps, sF, sB,
        // control vars
-        p3drag, p0drag, ctrls, customN, customP, ctrlsN, ctrlsP,
+        p3drag, p0drag,
         wPercent, wOrig, hPercent, hOrig,
         pWidth, pWidthN, pWidthH, pHeight, speedH,
-
-        events = {
-          create: 'bookletcreate', // called when booklet has been created
-          start:  'bookletstart',  // called when booklet starts to change pages
-          change: 'bookletchange', // called when booklet has finished changing pages
-          add:    'bookletadd',    // called when booklet has added a page
-          remove: 'bookletremove'  // called when booklet has removed a page
-        },
-        callback,
 
         ///////////////////////////////////////////////////////////////////////
         // CLASSES
@@ -250,7 +237,7 @@
             pages.push(newPage);            
           } */
           children.each(function (i) {
-            var newPage = new Page($(this), i);
+            newPage = new Page($(this), i);
 
             nodes.push(newPage.pageNode);
             pages.push(newPage);
@@ -369,7 +356,7 @@
 
           // save page sizes and other vars
           pWidth = options.width / 2;
-          pWidthN = '-' + (pWidth) + 'px';
+          pWidthN = '-' + pWidth + 'px';
           pWidthH = pWidth / 2;
           pHeight = options.height;
           speedH = options.speed / 2;
@@ -504,7 +491,7 @@
             },
             p3inDrag: {
               left: pWidth / 4,
-              width: pWidth * .75,
+              width: pWidth * 0.75,
               paddingLeft: options.shadowBtmWidth
             },
             p3out: {
@@ -566,7 +553,7 @@
               options.width = parseFloat((wOrig.replace('%', '') / 100) * parent.width());
               target.width(options.width);
               pWidth = options.width / 2;
-              pWidthN = '-' + (pWidth) + 'px';
+              pWidthN = '-' + pWidth + 'px';
               pWidthH = pWidth / 2;
             }
             if (hPercent) {
@@ -762,17 +749,6 @@
 
           originalPageTotal = target.children().length;
 
-          // callback for adding page, returns options, index and the page node
-          callback = {
-            options: $.extend({}, options),
-            index: index,
-            page: target.children(':eq(' + index + ')')[0]
-          };
-          if (options.add) {
-            target.off(events.add + '.booklet').on(events.add + '.booklet', options.add);
-          }
-          target.trigger(events.add, callback);
-
           // recall initialize functions
           initPages();
           updateOptions();
@@ -822,17 +798,6 @@
 
           originalPageTotal = target.children().length;
 
-          // callback for removing page, returns options, index and the page node
-          callback = {
-            options: $.extend({}, options),
-            index: index,
-            page: removedPage[0]
-          };
-          if (options.remove) {
-            target.off(events.remove + '.booklet').on(events.remove + '.booklet', options.remove);
-          }
-          target.trigger(events.remove, callback);
-
           removedPage = null;
 
           // recall initialize functions
@@ -864,111 +829,82 @@
           }
         },
         goToPage = function (newIndex) {
-            var speed;
+          var speed;
 
-            if (newIndex < options.pageTotal && newIndex >= 0 && !isBusy && !isDisabled) {
-                // moving forward (increasing number)
-                if (newIndex > options.currentIndex) {
-                    isBusy = true;
-                    diff = newIndex - options.currentIndex;
-                    options.currentIndex = newIndex;
-                    options.movingForward = true;
+          if (newIndex < options.pageTotal && newIndex >= 0 && !isBusy && !isDisabled) {
+            // moving forward (increasing number)
+            if (newIndex > options.currentIndex) {
+              isBusy = true;
+              diff = newIndex - options.currentIndex;
+              options.currentIndex = newIndex;
+              options.movingForward = true;
 
-                    // callback when starting booklet animation
-                    callback = {
-                        options: $.extend({}, options),
-                        index: newIndex,
-                        pages: [pages[newIndex].contentNode, pages[newIndex + 1].contentNode]
-                    };
-                    if (options.start) {
-                        target.off(events.start + '.booklet').on(events.start + '.booklet', options.start);
-                    }
-                    target.trigger(events.start, callback);
+              // set animation speed, depending if user dragged any distance or not
+              speed = p3drag === true ? options.speed * (p3.width() / pWidth) : speedH;
 
-                    // set animation speed, depending if user dragged any distance or not
-                    speed = p3drag === true ? options.speed * (p3.width() / pWidth) : speedH;
+              startPageAnimation(diff, true, sF, speed);
 
-                    startPageAnimation(diff, true, sF, speed);
+              // hide p2 as p3 moves across it
+              p2.stop().animate(anim.p2, speed, p3drag === true ? options.easeOut : options.easeIn);
 
-                    // hide p2 as p3 moves across it
+              // if animating after a manual drag, calculate new speed and animate out
+              if (p3drag) {
+                p3.animate(anim.p3out, speed, options.easeOut);
+                p3wrap.animate(anim.p3wrapOut, speed, options.easeOut, function () {
+                  updateAfter();
+                });
+              } else {
+                p3.stop()
+                  .animate(anim.p3in, speed, options.easeIn)
+                  .animate(anim.p3out, speed, options.easeOut);
+                p3wrap
+                  .animate(anim.p3wrapIn, speed, options.easeIn)
+                  .animate(anim.p3wrapOut, speed, options.easeOut, function () {
+                    updateAfter();
+                  });
+              }
+            } else if (newIndex < options.currentIndex) {
+              // moving backward (decreasing number)
+              isBusy = true;
+              diff = options.currentIndex - newIndex;
+              options.currentIndex = newIndex;
+              options.movingForward = false;
 
-                        p2.stop().animate(anim.p2, speed, p3drag === true ? options.easeOut : options.easeIn);
+              // set animation speed, depending if user dragged any distance or not
+              speed = p0drag === true ? options.speed * (p0.width() / pWidth) : speedH;
+              startPageAnimation(diff, false, sB, speed);
 
+              if (p0drag) {
+                // hide p1 as p0 moves across it
+                p1.animate(anim.p1, speed, options.easeOut);
+                p1wrap.animate(anim.p1wrap, speed, options.easeOut);
+                p0.animate(anim.p0, speed, options.easeOut);
 
-                    // if animating after a manual drag, calculate new speed and animate out
-                    if (p3drag) {
+                p0wrap.animate(anim.p0wrapDrag, speed, options.easeOut, function () {
+                  updateAfter();
+                });
+              } else {
+                // hide p1 as p0 moves across it
+                p1.animate(anim.p1, speed * 2, options.easing);
+                p1wrap.animate(anim.p1wrap, speed * 2, options.easing);
 
-                        p3.animate(anim.p3out, speed, options.easeOut);
-                        p3wrap.animate(anim.p3wrapOut, speed, options.easeOut, function () {
-                            updateAfter();
-                        });
+                p0
+                  .animate(anim.p0in, speed, options.easeIn)
+                  .animate(anim.p0out, speed, options.easeOut);
 
-                    } else {
-
-                        p3.stop().animate(anim.p3in, speed, options.easeIn)
-                            .animate(anim.p3out, speed, options.easeOut);
-
-                        p3wrap.animate(anim.p3wrapIn, speed, options.easeIn)
-                            .animate(anim.p3wrapOut, speed, options.easeOut, function () {
-                                updateAfter();
-                            });
-                    }
-
-                    // moving backward (decreasing number)
-                } else if (newIndex < options.currentIndex) {
-                    isBusy = true;
-                    diff = options.currentIndex - newIndex;
-                    options.currentIndex = newIndex;
-                    options.movingForward = false;
-
-                    // callback when starting booklet animation
-                    callback = {
-                        options: $.extend({}, options),
-                        index: newIndex,
-                        pages: [pages[newIndex].contentNode, pages[newIndex + 1].contentNode]
-                    };
-                    if (options.start) {
-                        target.off(events.start + '.booklet').on(events.start + '.booklet', options.start);
-                    }
-                    target.trigger(events.start, callback);
-
-                    // set animation speed, depending if user dragged any distance or not
-                    speed = p0drag === true ? options.speed * (p0.width() / pWidth) : speedH;
-
-                    startPageAnimation(diff, false, sB, speed);
-
-                    if (p0drag) {
-                        // hide p1 as p0 moves across it
-                        p1.animate(anim.p1, speed, options.easeOut);
-                        p1wrap.animate(anim.p1wrap, speed, options.easeOut);
-
-                            p0.animate(anim.p0, speed, options.easeOut);
-
-                        p0wrap.animate(anim.p0wrapDrag, speed, options.easeOut, function () {
-                            updateAfter();
-                        });
-                    } else {
-                        // hide p1 as p0 moves across it
-                        p1.animate(anim.p1, speed * 2, options.easing);
-                        p1wrap.animate(anim.p1wrap, speed * 2, options.easing);
-
-                            p0.animate(anim.p0in, speed, options.easeIn)
-                                .animate(anim.p0out, speed, options.easeOut);
-
-
-                        p0wrap.animate(anim.p0wrapIn, speed, options.easeIn)
-                            .animate(anim.p0wrapOut, speed, options.easeOut, function () {
-                                updateAfter();
-                            });
-                    }
-                }
+                p0wrap
+                  .animate(anim.p0wrapIn, speed, options.easeIn)
+                  .animate(anim.p0wrapOut, speed, options.easeOut, function () {
+                    updateAfter();
+                  });
+              }
             }
+          }
         },
         startHoverAnimation = function (inc) {
           if (!isDisabled && ((options.hovers && options.overlays) || options.manual)) {
             if (inc) {
               if (!isBusy && !isHoveringRight && !isHoveringLeft && !p3drag && options.currentIndex + 2 <= options.pageTotal - 2) {
-                // animate
                 p2.stop().animate(anim.hover.p2, anim.hover.speed, options.easing);
                 p3.addClass('b-grab');
                 p3.stop().animate(anim.hover.p3, anim.hover.speed, options.easing);
@@ -977,7 +913,6 @@
               }
             } else {
               if (!isBusy && !isHoveringLeft && !isHoveringRight && !p0drag && options.currentIndex - 2 >= 0) {
-                // animate
                 p1.stop().animate(anim.hover.p1, anim.hover.speed, options.easing);
                 p0.addClass('b-grab');
                 p1wrap.stop().animate(anim.hover.p1wrap, anim.hover.speed, options.easing);
@@ -1039,8 +974,8 @@
 
               pN = target.find('.b-pN');
               p0 = target.find('.b-p0');
-              pNwrap = target.find('.b-pN .b-wrap');
-              p0wrap = target.find('.b-p0 .b-wrap');
+              pNwrap = pN.find('.b-wrap');
+              p0wrap = p0.find('.b-wrap');
 
               p0wrap.css(css.p0wrap);
 
@@ -1053,14 +988,6 @@
         updateAfter = function () {
           updatePages();
           isBusy = false;
-
-          // callback when ending booklet animation
-          callback = {
-            options: $.extend({}, options),
-            index: options.currentIndex,
-            pages: [pages[options.currentIndex].contentNode, pages[options.currentIndex + 1].contentNode]
-          };
-          target.trigger(events.change, callback);
         };
 
     ///////////////////////////////////////////////////////////////////////////
@@ -1095,11 +1022,6 @@
         // adjust for odd page
         if (index % 2 !== 0) {
           index -= 1;
-        }
-
-        // adjust for booklet direction
-        if (options.direction === directions.rightToLeft) {
-          index = Math.abs(index - options.pageTotal) - 2;
         }
 
         goToPage(index);
@@ -1137,12 +1059,10 @@
     width: 600, // container width
     height: 400, // container height
     speed: 1000, // speed of the transition between pages
-    direction: 'LTR', // direction of the overall content organization, default LTR, left to right, can be RTL for languages which read right to left
     startingPage: 0, // index of the first page to be displayed
     easing: 'easeInOutQuad', // easing method for complete transition
     easeIn: 'easeInQuad', // easing method for first half of transition
     easeOut: 'easeOutQuad', // easing method for second half of transition
-    toolbar: {},
 
     pagePadding: 10, // padding for each page wrapper
 
@@ -1160,12 +1080,6 @@
 
     shadowTopFwdWidth: 166, // shadow width for top forward animation
     shadowTopBackWidth: 166, // shadow width for top back animation
-    shadowBtmWidth: 50, // shadow width for bottom shadow
-
-    create: null, // called when booklet has been created
-    start: null, // called when booklet starts to change pages
-    change: null, // called when booklet has finished changing pages
-    add: null, // called when booklet has added a page
-    remove: null // called when booklet has removed a page
+    shadowBtmWidth: 50 // shadow width for bottom shadow
   };
 })(this, jQuery);
