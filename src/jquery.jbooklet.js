@@ -1,10 +1,10 @@
 /*
  * jBooklet jQuery Plugin
- * Copyright (c) 2014 Eugene Zlobin (http://zlobin.pro)
+ * Copyright (c) 2014 Eugene Zlobin (http://zlobin.pro/zlobin_eng.html)
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.0.1
+ * Version : 2.0.2
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -13,30 +13,25 @@
 (function (window, $, undefined) {
   'use strict';
 
-  $.fn.booklet = function (options, param1, param2) {
-    var method, params, output, result, config, index;
-    var $el = $(this);
+  $.fn.booklet = function(options) {
+    var $el = $(this),
+        result = [],
+        method,
+        output,
+        config,
+        args = Array.prototype.slice.call(arguments, 1);
 
     // option type string - api call
     if (typeof options === 'string') {
-      result = [];
-      $el.each(function () {
-        var obj = $el.data('booklet');
+      $el.each(function() {
+        var obj = $el.data('jbooklet');
 
         if (obj) {
           method = options;
-          // add optional parameters
-          params = [];
-          if (param1 !== undefined) {
-            params.push(param1);
-          }
-          if (param2 !== undefined) {
-            params.push(param2);
-          }
           if (obj[method]) {
-            output = obj[method].apply(obj, params);
+            output = obj[method].apply(obj, args);
             if (output !== undefined || output) {
-              result.push(obj[method].apply(obj, params));
+              result.push(obj[method].apply(obj, args));
             }
           } else {
             $.error('Method "' + method + '" does not exist on jQuery.booklet.');
@@ -53,25 +48,11 @@
       } else {
         return $el;
       }
-    }
-    // option type number - api call
-    else if (typeof options === 'number') {
-      return $el.each(function () {
-        var obj = $(this).data('booklet');
-
-        if (obj) {
-          index = options;
-          obj.gotopage(index);
-        } else {
-          $.error('jQuery.booklet has not been initialized.');
-        }
-      });
-    }
-    // else build new booklet
-    else if (typeof method === 'object' || !method) {
-      return $el.each(function () {
-        var $el = $(this);
-        var obj = $el.data('booklet');
+    } else if (typeof method === 'object' || !method) {
+      // else build new booklet
+      return $el.each(function() {
+        var $element = $(this);
+        var obj = $el.data('jbooklet');
 
         config = $.extend({}, $.fn.booklet.defaults, options);
 
@@ -81,15 +62,15 @@
         }
 
         // instantiate the booklet
-        obj = new Booklet($el, config);
+        obj = new Booklet($element, config);
         obj.init();
 
-        return this; // preserve chaining on main function
+        return this;
       });
     }
   };
 
-  function Booklet(inTarget, inOptions) {    
+  function Booklet(target, inOptions) {    
     var $wrapper = $('<div>', {
       class: 'b-page'
     });
@@ -98,14 +79,12 @@
     });
     $underWrapper.appendTo($wrapper);
 
-    var target = inTarget,
-        options = inOptions,
+    var options = inOptions,
         isInit = false,
         isBusy = false,
         isPlaying = false,
         isHoveringRight = false,
         isHoveringLeft = false,
-        isDisabled = false,
         templates = {
           //book page with no content
           empty: '<div class="b-page-empty" title=""></div>',
@@ -119,15 +98,11 @@
         diff,
         originalPageTotal, startingPageNumber,
         // page content vars
-        pN, p0, p1, p2, p3, p4, pNwrap, p0wrap, p1wrap, p2wrap, p3wrap, p4wrap, wraps, sF, sB,
+        pN, p0, p1, p2, p3, p4, pNwrap, p0wrap, p1wrap, p2wrap, p3wrap, p4wrap, wraps,
        // control vars
         p3drag, p0drag,
         wPercent, wOrig, hPercent, hOrig,
         pWidth, pWidthN, pWidthH, pHeight, speedH,
-
-        ///////////////////////////////////////////////////////////////////////
-        // CLASSES
-        ///////////////////////////////////////////////////////////////////////
 
         Page = function ($contentNode, index) {
           var $el = $wrapper.clone();
@@ -150,23 +125,19 @@
           };
         },
 
-        ///////////////////////////////////////////////////////////////////////
-        // INITIAL FUNCTIONS
-        ///////////////////////////////////////////////////////////////////////
-
         init = function () {
           target.addClass('booklet');
 
           // store data for api calls
-          target.data('booklet', this);
+          target.data('jbooklet', this);
 
           // save original number of pages
           originalPageTotal = target.children().length;
           options.currentIndex = 0;
-          
-          /* if (originalPageTotal > 100) {
+
+          if (originalPageTotal > 500) {
             options.manual = false;
-          } */
+          }
 
           // generate page markup
           initPages();
@@ -176,13 +147,6 @@
           updatePages();
 
           isInit = true;
-          isDisabled = false;
-        },
-        enable = function () {
-          isDisabled = false;
-        },
-        disable = function () {
-          isDisabled = true;
         },
         destroy = function () {
           // destroy all booklet items
@@ -194,15 +158,12 @@
           isInit = false;
         },
 
-        ///////////////////////////////////////////////////////////////////////
-        // PAGE FUNCTIONS
-        ///////////////////////////////////////////////////////////////////////
-
         initPages = function () {
           var nodes = [];
           var children = target.children();
           var length = target.children().length;
           var newPage;
+          var i;
 
           pages = [];
 
@@ -230,19 +191,12 @@
           }
 
           // load pages
-          /* while (length--) {
-            newPage = new Page($(children[length]), length);
-
-            nodes.push(newPage.pageNode);
-            pages.push(newPage);            
-          } */
-          children.each(function (i) {
-            newPage = new Page($(this), i);
+          for (i = 0; i < length; i++) {
+            newPage = new Page($(children[i]), i);
 
             nodes.push(newPage.pageNode);
             pages.push(newPage);
-          });
-
+          }
           target.append(nodes);
         },
         updatePages = function () {
@@ -286,9 +240,6 @@
           wraps = target.find('.b-wrap');
         },
         updatePageCSS = function () {
-          // target.find('.b-page').removeAttr('style');
-          // wraps.removeAttr('style');
-
           wraps.css(css.wrap);
           p0wrap.css(css.p0wrap);
           p1.css(css.p1);
@@ -301,12 +252,12 @@
           target.width(options.width);
         },
         destroyPages = function () {
-          var bWrap = target.find(".b-wrap");
+          var bWrap = target.find('.b-wrap');
 
           // remove booklet markup
           bWrap.unwrap();
           bWrap.children().unwrap();
-          target.find(".b-counter, .b-page-blank, .b-page-empty").remove();
+          target.find('.b-counter, .b-page-blank, .b-page-empty').remove();
         },
 
         ///////////////////////////////////////////////////////////////////////
@@ -331,9 +282,9 @@
 
           // Set width.
           if (OpWidth && typeof OpWidth === 'string') {
-            if (OpWidth.indexOf("px") !== -1) {
+            if (OpWidth.indexOf('px') !== -1) {
               options.width = OpWidth.replace('px', '');
-            } else if (OpWidth.indexOf("%") !== -1) {
+            } else if (OpWidth.indexOf('%') !== -1) {
               wPercent = true;
               wOrig = OpWidth;
               options.width = parseFloat((OpWidth.replace('%', '') / 100) * parent.width());
@@ -342,9 +293,9 @@
 
           // Set height.
           if (OpHeight && typeof OpHeight === 'string') {
-            if (OpHeight.indexOf("px") !== -1) {
+            if (OpHeight.indexOf('px') !== -1) {
               options.height = OpHeight.replace('px', '');
-            } else if (OpHeight.indexOf("%") !== -1) {
+            } else if (OpHeight.indexOf('%') !== -1) {
               hPercent = true;
               hOrig = OpHeight;
               options.height = parseFloat((OpHeight.replace('%', '') / 100) * parent.height());
@@ -426,16 +377,6 @@
             },
             p4: {
               left: pWidth,
-              width: pWidth,
-              height: pHeight
-            },
-            sF: {
-              right: 0,
-              width: pWidth,
-              height: pHeight
-            },
-            sB: {
-              left: 0,
               width: pWidth,
               height: pHeight
             }
@@ -547,23 +488,21 @@
         updatePercentageSize = function () {
           var parent = target.parent();
 
-          if (!isDisabled) {
-            // recalculate size for percentage values, called with window is resized
-            if (wPercent) {
-              options.width = parseFloat((wOrig.replace('%', '') / 100) * parent.width());
-              target.width(options.width);
-              pWidth = options.width / 2;
-              pWidthN = '-' + pWidth + 'px';
-              pWidthH = pWidth / 2;
-            }
-            if (hPercent) {
-              options.height = parseFloat((hOrig.replace('%', '') / 100) * parent.height());
-              target.height(options.height);
-              pHeight = options.height;
-            }
-            updateCSSandAnimations();
-            updatePageCSS();
+          // recalculate size for percentage values, called with window is resized
+          if (wPercent) {
+            options.width = parseFloat((wOrig.replace('%', '') / 100) * parent.width());
+            target.width(options.width);
+            pWidth = options.width / 2;
+            pWidthN = '-' + pWidth + 'px';
+            pWidthH = pWidth / 2;
           }
+          if (hPercent) {
+            options.height = parseFloat((hOrig.replace('%', '') / 100) * parent.height());
+            target.height(options.height);
+            pHeight = options.height;
+          }
+          updateCSSandAnimations();
+          updatePageCSS();
         },
         updateManualControls = function () {
           var origX, newX, diff, fullPercent, shadowPercent, shadowW, curlW, 
@@ -578,7 +517,7 @@
 
             // implement draggable forward
             p3.draggable({
-              axis: "x",
+              axis: 'x',
               containment: [
                 target.offset().left,
                 0,
@@ -618,15 +557,13 @@
                 } else {
                   p3drag = false;
                   p3.removeClass('b-grabbing').addClass('b-grab');
-
-                  sF.animate({left: 'auto', opacity: 0}, anim.hover.speed, options.easing).css(css.sF);
                 }
               }
             });
 
             // implement draggable backwards
             p0.draggable({
-              axis: "x",
+              axis: 'x',
               //containment: 'parent',
               containment: [
                 target.offset().left + hoverCurlWidth,
@@ -668,9 +605,10 @@
                   prev();
                   p0.removeClass('b-grab b-grabbing');
                 } else {
-                  sB.animate({opacity: 0}, anim.hover.speed, options.easing).css(css.sB);
                   p0drag = false;
-                  p0.removeClass('b-grabbing').addClass('b-grab');
+                  p0
+                    .removeClass('b-grabbing')
+                    .addClass('b-grab');
                 }
               }
             });
@@ -713,17 +651,15 @@
           target.off('.booklet');
         },
 
-        ///////////////////////////////////////////////////////////////////////
-        // DYNAMIC FUNCTIONS
-        ///////////////////////////////////////////////////////////////////////
+        /* -------------------- Pages -------------------- */
 
         addPage = function (index, html) {
           // validate inputs
-          if (index === "start") {
+          if (index === 'first') {
             index = 0;
-          } else if (index === "end") {
+          } else if (index === 'last') {
             index = originalPageTotal;
-          } else if (typeof index === "number") {
+          } else if (typeof index === 'number') {
             if (index < 0 || index > originalPageTotal) {
               return;
             }
@@ -758,11 +694,11 @@
           var removedPage;
 
           // validate inputs
-          if (index === "start") {
+          if (index === 'start') {
             index = 0;
-          } else if (index === "end") {
+          } else if (index === 'end') {
             index = originalPageTotal;
-          } else if (typeof index === "number") {
+          } else if (typeof index === 'number') {
             if (index < 0 || index > originalPageTotal) {
               return;
             }
@@ -806,12 +742,10 @@
           updateOptions();
         },
 
-        ///////////////////////////////////////////////////////////////////////
-        // ANIMATION FUNCTIONS
-        ///////////////////////////////////////////////////////////////////////
+        /* -------------------- Navigation -------------------- */
 
         next = function () {
-          if (!isBusy && !isDisabled) {
+          if (!isBusy) {
             if (isPlaying && options.currentIndex + 2 >= options.pageTotal) {
               goToPage(0);
             } else {
@@ -820,7 +754,7 @@
           }
         },
         prev = function () {
-          if (!isBusy && !isDisabled) {
+          if (!isBusy) {
             if (isPlaying && options.currentIndex - 2 < 0) {
               goToPage(options.pageTotal - 2);
             } else {
@@ -831,7 +765,7 @@
         goToPage = function (newIndex) {
           var speed;
 
-          if (newIndex < options.pageTotal && newIndex >= 0 && !isBusy && !isDisabled) {
+          if (newIndex < options.pageTotal && newIndex >= 0 && !isBusy) {
             // moving forward (increasing number)
             if (newIndex > options.currentIndex) {
               isBusy = true;
@@ -842,7 +776,7 @@
               // set animation speed, depending if user dragged any distance or not
               speed = p3drag === true ? options.speed * (p3.width() / pWidth) : speedH;
 
-              startPageAnimation(diff, true, sF, speed);
+              startPageAnimation(diff, true, speed);
 
               // hide p2 as p3 moves across it
               p2.stop().animate(anim.p2, speed, p3drag === true ? options.easeOut : options.easeIn);
@@ -872,7 +806,7 @@
 
               // set animation speed, depending if user dragged any distance or not
               speed = p0drag === true ? options.speed * (p0.width() / pWidth) : speedH;
-              startPageAnimation(diff, false, sB, speed);
+              startPageAnimation(diff, false, speed);
 
               if (p0drag) {
                 // hide p1 as p0 moves across it
@@ -902,7 +836,7 @@
           }
         },
         startHoverAnimation = function (inc) {
-          if (!isDisabled && ((options.hovers && options.overlays) || options.manual)) {
+          if (options.hovers || options.manual) {
             if (inc) {
               if (!isBusy && !isHoveringRight && !isHoveringLeft && !p3drag && options.currentIndex + 2 <= options.pageTotal - 2) {
                 p2.stop().animate(anim.hover.p2, anim.hover.speed, options.easing);
@@ -924,7 +858,7 @@
           }
         },
         endHoverAnimation = function (inc) {
-          if (!isDisabled && ((options.hovers && options.overlays) || options.manual)) {
+          if (options.hovers || options.manual) {
             if (inc) {
               if (!isBusy && isHoveringRight && !p3drag && options.currentIndex + 2 <= options.pageTotal - 2) {
                 p2.stop().animate(anim.hover.p2end, anim.hover.speed, options.easing);
@@ -990,28 +924,24 @@
           isBusy = false;
         };
 
-    ///////////////////////////////////////////////////////////////////////////
-    // PUBLIC FUNCTIONS
-    ///////////////////////////////////////////////////////////////////////////
+    /* -------------------------- API -------------------------- */
 
     return {
       init: init,
-      enable: enable,
-      disable: disable,
       destroy: destroy,
       next: next,
       prev: prev,
       gotopage: function (index) {
         // validate inputs
         if (typeof index === 'string') {
-          if (index === "start") {
+          if (index === 'first') {
             index = 0;
-          } else if (index === "end") {
+          } else if (index === 'last') {
             index = options.pageTotal - 2;
           } else {
             this.gotopage(parseInt(index));
           }
-        } else if (typeof index === "number") {
+        } else if (typeof index === 'number') {
           if (index < 0 || index >= options.pageTotal) {
             return;
           }
@@ -1056,8 +986,8 @@
 
   // define default options
   $.fn.booklet.defaults = {
-    width: 600, // container width
-    height: 400, // container height
+    width: 600, // container width, px
+    height: 400, // container height, px
     speed: 1000, // speed of the transition between pages
     startingPage: 0, // index of the first page to be displayed
     easing: 'easeInOutQuad', // easing method for complete transition
@@ -1072,14 +1002,7 @@
     hoverSpeed: 500, // default speed for page-turn hover preview
     hoverThreshold: 0.25, // default percentage used for manual page dragging, sets the percentage amount a drag must be before moving next or prev
     hoverClick: true, // enables hovered arreas to be clicked when using manual page turning
-    nextControlTitle: 'Next Page', // text for title attributes of all 'next' controls
-    previousControlTitle: 'Previous Page', // text for title attributes of all 'previous' controls
-    cursor: 'pointer', // cursor css setting for side bar areas
-    next: null, // selector for element to use as click trigger for next page
-    prev: null, // selector for element to use as click trigger for previous page
 
-    shadowTopFwdWidth: 166, // shadow width for top forward animation
-    shadowTopBackWidth: 166, // shadow width for top back animation
-    shadowBtmWidth: 50 // shadow width for bottom shadow
+    shadowBtmWidth: 30 // shadow width for bottom shadow
   };
 })(this, jQuery);
