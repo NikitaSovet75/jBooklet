@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.1.0
+ * Version : 2.1.1
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -72,13 +72,12 @@
 
   function Booklet(target, inOptions) {    
     var $wrapper = $('<div>', {
-      class: 'b-page'
-    });
-    var $underWrapper = $('<div>', {
-      class: 'b-wrap'
-    });
+          class: 'b-page'
+        }),
+        $underWrapper = $('<div>', {
+          class: 'b-wrap'
+        });
     $underWrapper.appendTo($wrapper);
-
     var options = inOptions,
         isInit = false,
         isBusy = false,
@@ -86,16 +85,12 @@
         isHoveringRight = false,
         isHoveringLeft = false,
         templates = {
-          //book page with no content
-          empty: '<div class="b-page-empty" title=""></div>',
           //transparent item used with closed books
-          blank: '<div class="b-page-blank" title=""></div>'
+          blank: '<div class="b-page-blank"></div>'
         },
         css = {}, anim = {},
         hoverShadowWidth, hoverFullWidth, hoverCurlWidth,
-        pages = [],
-
-        diff,
+        pages = [], diff,
         originalPageTotal, startingPageNumber,
         // page content vars
         pN, p0, p1, p2, p3, p4, pNwrap, p0wrap, p1wrap, p2wrap, p3wrap, p4wrap, wraps,
@@ -127,7 +122,6 @@
 
         init = function () {
           target.addClass('booklet');
-
           // store data for api calls
           target.data('jbooklet', this);
 
@@ -159,11 +153,9 @@
         },
 
         initPages = function () {
-          var nodes = [];
-          var children = target.children();
-          var length = target.children().length;
-          var newPage;
-          var i;
+          var nodes = [], newPage, i,
+              children = target.children(),
+              length = target.children().length;
 
           pages = [];
 
@@ -260,15 +252,11 @@
           target.find('.b-counter, .b-page-blank, .b-page-empty').remove();
         },
 
-        ///////////////////////////////////////////////////////////////////////
-        // OPTION / CONTROL FUNCTIONS
-        ///////////////////////////////////////////////////////////////////////
-
         updateOptions = function (newOptions) {
-          var didUpdate = false;
-          var parent = target.parent();
-          var OpWidth = options.width;
-          var OpHeight = options.height;
+          var didUpdate = false,
+              parent = target.parent(),
+              OpWidth = options.width,
+              OpHeight = options.height;
 
           // update options if newOptions have been passed in
           if (newOptions !== null && newOptions !== undefined) {
@@ -301,9 +289,6 @@
               options.height = parseFloat((OpHeight.replace('%', '') / 100) * parent.height());
             }
           }
-
-          //target.width(options.width);
-          //target.height(options.height);
 
           // save page sizes and other vars
           pWidth = options.width / 2;
@@ -342,7 +327,9 @@
               left: 0,
               width: pWidth - (options.pagePadding * 2),
               height: pHeight - (options.pagePadding * 2),
-              padding: options.pagePadding
+              padding: options.pagePadding,
+              'overflow-y': 'auto',
+              opacity: 1
             },
             p0wrap: {
               right: 0,
@@ -379,6 +366,12 @@
               left: pWidth,
               width: pWidth,
               height: pHeight
+            },
+            pwrap: {
+              'hover': {
+                'opacity': 0.1,
+                'overflow-y': 'hidden'
+              }
             }
           };
 
@@ -391,29 +384,24 @@
             hover: {
               speed: options.hoverSpeed,
               size: options.hoverWidth,
-
               p2: { width: pWidth - hoverCurlWidth },
               p3: { left: options.width - hoverFullWidth, width: hoverCurlWidth },
               p3closed: { left: pWidth - options.hoverWidth, width: hoverCurlWidth },
               p3wrap: { left: hoverShadowWidth },
-
               p2end: { width: pWidth },
               p2closedEnd: { width: pWidth, left: 0 },
               p3end: { left: options.width, width: 0 },
               p3closedEnd: { left: pWidth, width: 0 },
               p3wrapEnd: { left: 10 },
-
               p1: { left: hoverCurlWidth, width: pWidth - hoverCurlWidth },
               p1wrap: { left: '-' + hoverCurlWidth + 'px' },
               p0: { left: hoverCurlWidth, width: hoverCurlWidth },
               p0wrap: { right: hoverShadowWidth },
-
               p1end: { left: 0, width: pWidth },
               p1wrapEnd: { left: 0 },
               p0end: { left: 0, width: 0 },
               p0wrapEnd: { right: 0 }
             },
-
             // forward
             p2: {
               width: 0
@@ -446,7 +434,6 @@
             p3wrapOut: {
               left: 0
             },
-
             // backwards
             p1: {
               left: pWidth,
@@ -519,8 +506,7 @@
             p3.draggable({
               axis: 'x',
               containment: [
-                target.offset().left,
-                0,
+                target.offset().left, 0,
                 p2.offset().left + pWidth - hoverFullWidth,
                 pHeight
               ],
@@ -540,7 +526,6 @@
                 // set top page curl width
                 curlW = hoverCurlWidth + diff / 2;
                 curlW = curlW > pWidth ? pWidth : curlW; // constrain max width
-
                 // set bottom page width, hide
                 underW = pWidth - curlW;
 
@@ -606,9 +591,7 @@
                   p0.removeClass('b-grab b-grabbing');
                 } else {
                   p0drag = false;
-                  p0
-                    .removeClass('b-grabbing')
-                    .addClass('b-grab');
+                  p0.removeClass('b-grabbing').addClass('b-grab');
                 }
               }
             });
@@ -622,7 +605,7 @@
 
             // mouse tracking for page movement
             target.off('mousemove.booklet').on('mousemove.booklet', function (e) {
-              diff = e.pageX - target.offset().left;
+              diff = e.pageX - target.offset().left + options.scrollWidth;
               if (diff < anim.hover.size) {
                 startHoverAnimation(false);
               } else if (diff > anim.hover.size && diff <= options.width - anim.hover.size) {
@@ -641,10 +624,11 @@
           destroyManualControls();
         },
         destroyManualControls = function () {
+          var bPage = target.find('.b-page');
           if ($.ui) {
             // remove old draggables
-            if (target.find('.b-page').draggable()) {
-              target.find('.b-page').draggable('destroy').removeClass('b-grab b-grabbing');
+            if (bPage.draggable()) {
+              bPage.draggable('destroy').removeClass('b-grab b-grabbing');
             }
           }
           // remove mouse tracking for page movement
@@ -836,6 +820,8 @@
           }
         },
         startHoverAnimation = function (inc) {
+          var pWidth = p2wrap.width();
+
           if (options.hovers || options.manual) {
             if (inc) {
               if (!isBusy && !isHoveringRight && !isHoveringLeft && !p3drag && options.currentIndex + 2 <= options.pageTotal - 2) {
@@ -844,6 +830,8 @@
                 p3.stop().animate(anim.hover.p3, anim.hover.speed, options.easing);
                 p3wrap.stop().animate(anim.hover.p3wrap, anim.hover.speed, options.easing);
                 isHoveringRight = true;
+                p2wrap.width(pWidth - options.scrollWidth * 2);
+                p4wrap.css(css.pwrap.hover);
               }
             } else {
               if (!isBusy && !isHoveringLeft && !isHoveringRight && !p0drag && options.currentIndex - 2 >= 0) {
@@ -853,6 +841,9 @@
                 p0.stop().animate(anim.hover.p0, anim.hover.speed, options.easing);
                 p0wrap.stop().animate(anim.hover.p0wrap, anim.hover.speed, options.easing);
                 isHoveringLeft = true;
+                p0wrap.css({
+                  'overflow-y': 'hidden'
+                });
               }
             }
           }
@@ -864,6 +855,8 @@
                 p2.stop().animate(anim.hover.p2end, anim.hover.speed, options.easing);
                 p3.stop().animate(anim.hover.p3end, anim.hover.speed, options.easing);
                 p3wrap.stop().animate(anim.hover.p3wrapEnd, anim.hover.speed, options.easing);
+                p2wrap.width('auto');
+                p4wrap.css(css.wrap);
                 isHoveringRight = false;
               }
             } else {
@@ -872,6 +865,7 @@
                 p1wrap.stop().animate(anim.hover.p1wrapEnd, anim.hover.speed, options.easing);
                 p0.stop().animate(anim.hover.p0end, anim.hover.speed, options.easing);
                 p0wrap.stop().animate(anim.hover.p0wrapEnd, anim.hover.speed, options.easing);
+                p0wrap.css(css.wrap);
                 isHoveringLeft = false;
               }
             }
@@ -882,18 +876,12 @@
 
             // setup content
             if (inc && diff > 2) {
-
               // initialize next 2 pages, if jumping forward in the book
               target.find('.b-p3, .b-p4').removeClass('b-p3 b-p4').hide();
               target.find('.b-page-' + currIndex).addClass('b-p3').show().stop().css(css.p3);
               target.find('.b-page-' + (currIndex + 1)).addClass('b-p4').show().css(css.p4);
               target.find('.b-page-' + currIndex + ' .b-wrap').show().css(css.wrap);
               target.find('.b-page-' + (currIndex + 1) + ' .b-wrap').show().css(css.wrap);
-
-              p3 = target.find('.b-p3');
-              p4 = target.find('.b-p4');
-              p3wrap = p3.find('.b-wrap');
-              p4wrap = p4.find('.b-wrap');
 
               if (isHoveringRight) {
                 p3.css({ 'left': options.width - 40, 'width': 20, 'padding-left': 10 });
@@ -905,12 +893,6 @@
               target.find('.b-page-' + (currIndex + 1)).addClass('b-p0').show().css(css.p0);
               target.find('.b-page-' + currIndex + ' .b-wrap').show().css(css.wrap);
               target.find('.b-page-' + (currIndex + 1) + ' .b-wrap').show().css(css.wrap);
-
-              pN = target.find('.b-pN');
-              p0 = target.find('.b-p0');
-              pNwrap = pN.find('.b-wrap');
-              p0wrap = p0.find('.b-wrap');
-
               p0wrap.css(css.p0wrap);
 
               if (isHoveringLeft) {
@@ -993,16 +975,14 @@
     easing: 'easeInOutQuad', // easing method for complete transition
     easeIn: 'easeInQuad', // easing method for first half of transition
     easeOut: 'easeOutQuad', // easing method for second half of transition
-
     pagePadding: 10, // padding for each page wrapper
-
     manual: true, // enables manual page turning, requires jQuery UI to function
     hovers: true, // enables preview page-turn hover animation, shows a small preview of previous or next page on hover
     hoverWidth: 50, // default width for page-turn hover preview
     hoverSpeed: 500, // default speed for page-turn hover preview
     hoverThreshold: 0.25, // default percentage used for manual page dragging, sets the percentage amount a drag must be before moving next or prev
     hoverClick: true, // enables hovered arreas to be clicked when using manual page turning
-
+    scrollWidth: 30,
     shadowBtmWidth: 30 // shadow width for bottom shadow
   };
 })(this, jQuery);
