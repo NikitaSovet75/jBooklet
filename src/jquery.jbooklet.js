@@ -129,7 +129,7 @@
           originalPageTotal = target.children().length;
           options.currentIndex = 0;
 
-          if (originalPageTotal > 500) {
+          if (originalPageTotal > 1000) {
             options.manual = false;
           }
 
@@ -820,7 +820,7 @@
           }
         },
         startHoverAnimation = function (inc) {
-          var pWidth = p2wrap.width();
+          var p2Width = p2wrap.width();
 
           if (options.hovers || options.manual) {
             if (inc) {
@@ -830,7 +830,8 @@
                 p3.stop().animate(anim.hover.p3, anim.hover.speed, options.easing);
                 p3wrap.stop().animate(anim.hover.p3wrap, anim.hover.speed, options.easing);
                 isHoveringRight = true;
-                p2wrap.width(pWidth - options.scrollWidth * 2);
+                p2wrap.data('widthBeforeHover', p2Width);
+                p2wrap.width(p2Width - anim.hover.p3.width);
                 p4wrap.css(css.pwrap.hover);
               }
             } else {
@@ -855,7 +856,7 @@
                 p2.stop().animate(anim.hover.p2end, anim.hover.speed, options.easing);
                 p3.stop().animate(anim.hover.p3end, anim.hover.speed, options.easing);
                 p3wrap.stop().animate(anim.hover.p3wrapEnd, anim.hover.speed, options.easing);
-                p2wrap.width('auto');
+                p2wrap.width(p2wrap.data('widthBeforeHover'));
                 p4wrap.css(css.wrap);
                 isHoveringRight = false;
               }

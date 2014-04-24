@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.1.1
+ * Version : 2.1.0
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -38,8 +38,8 @@
 }
 
 .booklet .b-grab {
-  background: #dbdbdb;
-  border: 1px dotted #dbdbdb;
+  background: transparent;
+  /* border: 1px dotted #dbdbdb; */
 }
 
 .booklet .b-wrap-left {
