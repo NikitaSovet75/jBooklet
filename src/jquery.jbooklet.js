@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.1.1
+ * Version : 2.2.0
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -251,22 +251,10 @@
           bWrap.children().unwrap();
           target.find('.b-counter, .b-page-blank, .b-page-empty').remove();
         },
-
-        updateOptions = function (newOptions) {
-          var didUpdate = false,
-              parent = target.parent(),
+        setWidthAndHeight = function() {
+          var parent = target.parent(),
               OpWidth = options.width,
               OpHeight = options.height;
-
-          // update options if newOptions have been passed in
-          if (newOptions !== null && newOptions !== undefined) {
-            // remove page structure, revert to original order
-            destroyPages();
-            destroyControls();
-            options = $.extend({}, options, newOptions);
-            didUpdate = true;
-            initPages();
-          }
 
           // Set width.
           if (OpWidth && typeof OpWidth === 'string') {
@@ -295,6 +283,22 @@
           pWidthN = '-' + pWidth + 'px';
           pWidthH = pWidth / 2;
           pHeight = options.height;
+        },
+        updateOptions = function(newOptions) {
+          var didUpdate = false;
+
+          // update options if newOptions have been passed in
+          if (newOptions !== null && newOptions !== undefined) {
+            // remove page structure, revert to original order
+            destroyPages();
+            destroyControls();
+            options = $.extend({}, options, newOptions);
+            didUpdate = true;
+            initPages();
+          }
+
+          setWidthAndHeight();
+
           speedH = options.speed / 2;
 
           // set total page count
@@ -307,9 +311,9 @@
           }
 
           // percentage resizing
-          $(window).on('resize.booklet', function () {
-            if ((wPercent || hPercent)) {
-              updatePercentageSize();
+          $(window).on('resize.booklet', function() {
+            if (options.autoSize && options.$containerW && options.$containerH) {
+              updateSize();
             }
           });
 
@@ -320,7 +324,7 @@
             updatePages();
           }
         },
-        updateCSSandAnimations = function () {
+        updateCSSandAnimations = function() {
           // init base css
           css = {
             wrap: {
@@ -472,22 +476,14 @@
             }
           };
         },
-        updatePercentageSize = function () {
-          var parent = target.parent();
+        updateSize = function () {
+          var height = options.$containerH.outerHeight(true),
+              width = options.$containerW.outerWidth(true);
 
-          // recalculate size for percentage values, called with window is resized
-          if (wPercent) {
-            options.width = parseFloat((wOrig.replace('%', '') / 100) * parent.width());
-            target.width(options.width);
-            pWidth = options.width / 2;
-            pWidthN = '-' + pWidth + 'px';
-            pWidthH = pWidth / 2;
-          }
-          if (hPercent) {
-            options.height = parseFloat((hOrig.replace('%', '') / 100) * parent.height());
-            target.height(options.height);
-            pHeight = options.height;
-          }
+          options.width = width + 'px';
+          options.height = height + 'px';
+
+          setWidthAndHeight();
           updateCSSandAnimations();
           updatePageCSS();
         },
@@ -973,6 +969,9 @@
     height: 400, // container height, px
     speed: 1000, // speed of the transition between pages
     startingPage: 0, // index of the first page to be displayed
+    autoSize: false,
+    $containerW: null,
+    $containerH: null,
     easing: 'easeInOutQuad', // easing method for complete transition
     easeIn: 'easeInQuad', // easing method for first half of transition
     easeOut: 'easeOutQuad', // easing method for second half of transition
