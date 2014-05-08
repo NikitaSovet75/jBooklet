@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.2.0
+ * Version : 2.2.1
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -268,7 +268,7 @@
           }
 
           // Set height.
-          if (OpHeight && typeof OpHeight === 'string') {
+          if (OpHeight && typeof OpHeight === 'string' && OpHeight !== '100%') {
             if (OpHeight.indexOf('px') !== -1) {
               options.height = OpHeight.replace('px', '');
             } else if (OpHeight.indexOf('%') !== -1) {
@@ -330,7 +330,8 @@
             wrap: {
               left: 0,
               width: pWidth - (options.pagePadding * 2),
-              height: pHeight - (options.pagePadding * 2),
+              //height: pHeight - (options.pagePadding * 2),
+              height: pHeight,
               padding: options.pagePadding,
               'overflow-y': 'auto',
               opacity: 1
@@ -481,7 +482,9 @@
               width = options.$containerW.outerWidth(true);
 
           options.width = width + 'px';
-          options.height = height + 'px';
+          if (options.height !== '100%') {
+            options.height = height + 'px';
+          }
 
           setWidthAndHeight();
           updateCSSandAnimations();
