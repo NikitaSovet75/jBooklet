@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.2.2
+ * Version : 2.3.0
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -729,22 +729,30 @@
         /* -------------------- Navigation -------------------- */
 
         next = function () {
+          var index;
+
           if (!isBusy) {
             if (isPlaying && options.currentIndex + 2 >= options.pageTotal) {
-              goToPage(0);
+              index = 0;
             } else {
-              goToPage(options.currentIndex + 2);
+              index = options.currentIndex + 2;
             }
           }
+          goToPage(index);
+          options.onGotoPage(index);
         },
         prev = function () {
+          var index;
+
           if (!isBusy) {
             if (isPlaying && options.currentIndex - 2 < 0) {
-              goToPage(options.pageTotal - 2);
+              index = options.pageTotal - 2;
             } else {
-              goToPage(options.currentIndex - 2);
+              index = options.currentIndex - 2;
             }
           }
+          goToPage(index);
+          options.onGotoPage(index);
         },
         goToPage = function (newIndex) {
           var speed;
@@ -768,7 +776,7 @@
               // if animating after a manual drag, calculate new speed and animate out
               if (p3drag) {
                 p3.animate(anim.p3out, speed, options.easeOut);
-                p3wrap.animate(anim.p3wrapOut, speed, options.easeOut, function () {
+                p3wrap.animate(anim.p3wrapOut, speed, options.easeOut, function() {
                   updateAfter();
                 });
               } else {
@@ -777,7 +785,7 @@
                   .animate(anim.p3out, speed, options.easeOut);
                 p3wrap
                   .animate(anim.p3wrapIn, speed, options.easeIn)
-                  .animate(anim.p3wrapOut, speed, options.easeOut, function () {
+                  .animate(anim.p3wrapOut, speed, options.easeOut, function() {
                     updateAfter();
                   });
               }
@@ -798,7 +806,7 @@
                 p1wrap.animate(anim.p1wrap, speed, options.easeOut);
                 p0.animate(anim.p0, speed, options.easeOut);
 
-                p0wrap.animate(anim.p0wrapDrag, speed, options.easeOut, function () {
+                p0wrap.animate(anim.p0wrapDrag, speed, options.easeOut, function() {
                   updateAfter();
                 });
               } else {
@@ -812,7 +820,7 @@
 
                 p0wrap
                   .animate(anim.p0wrapIn, speed, options.easeIn)
-                  .animate(anim.p0wrapOut, speed, options.easeOut, function () {
+                  .animate(anim.p0wrapOut, speed, options.easeOut, function() {
                     updateAfter();
                   });
               }
@@ -976,6 +984,7 @@
     autoSize: false,
     $containerW: null,
     $containerH: null,
+    onGotoPage: $.noop,
     easing: 'easeInOutQuad', // easing method for complete transition
     easeIn: 'easeInQuad', // easing method for first half of transition
     easeOut: 'easeOutQuad', // easing method for second half of transition
