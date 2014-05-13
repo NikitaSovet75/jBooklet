@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.2.1
+ * Version : 2.2.2
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -604,7 +604,8 @@
 
             // mouse tracking for page movement
             target.off('mousemove.booklet').on('mousemove.booklet', function (e) {
-              diff = e.pageX - target.offset().left + options.scrollWidth;
+              diff = e.pageX - target.offset().left;
+              diff += e.pageX > 300 ? options.scrollWidth : options.scrollWidth*-1;
               if (diff < anim.hover.size) {
                 startHoverAnimation(false);
               } else if (diff > anim.hover.size && diff <= options.width - anim.hover.size) {
