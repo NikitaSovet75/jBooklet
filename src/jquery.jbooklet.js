@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.3.1
+ * Version : 2.4.0
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -346,7 +346,7 @@
               height: pHeight
             },
             p2: {
-              left: pWidth,
+              left: pWidth - 20,
               width: pWidth,
               opacity: 1,
               height: pHeight
@@ -368,13 +368,13 @@
               paddingLeft: 0
             },
             p4: {
-              left: pWidth,
+              left: pWidth - 20,
               width: pWidth,
               height: pHeight
             },
             pwrap: {
-              'hover': {
-                'opacity': 0.1,
+              hover: {
+                opacity: 0.1,
                 'overflow-y': 'hidden'
               }
             }
@@ -620,6 +620,17 @@
               endHoverAnimation(false);
               endHoverAnimation(true);
             });
+          } else {
+            bPage.off('click.booklet');
+            
+            target.find('.b-p1').on('click.booklet', function(event) {
+              event.preventDefault();
+              prev();
+            });
+            target.find('.b-p2').on('click.booklet', function(event) {
+              event.preventDefault();
+              next();
+            });
           }
         },
         destroyControls = function () {
@@ -735,7 +746,7 @@
 
           if (!isBusy) {
             if (isPlaying && options.currentIndex + 2 >= options.pageTotal) {
-              index = 0;
+              index = options.pageTotal - 2;
             } else {
               index = options.currentIndex + 2;
             }
@@ -748,7 +759,7 @@
 
           if (!isBusy) {
             if (isPlaying && options.currentIndex - 2 < 0) {
-              index = options.pageTotal - 2;
+              index = 0;
             } else {
               index = options.currentIndex - 2;
             }
@@ -756,16 +767,13 @@
           goToPage(index);
           options.onGotoPage(index);
         },
-        goToPage = function (newIndex) {
-          var speed;
+        animations = {
+          leaf: function(newIndex) {
+            var speed;
 
-          if (newIndex < options.pageTotal && newIndex >= 0 && !isBusy) {
             // moving forward (increasing number)
             if (newIndex > options.currentIndex) {
-              isBusy = true;
               diff = newIndex - options.currentIndex;
-              options.currentIndex = newIndex;
-              options.movingForward = true;
 
               // set animation speed, depending if user dragged any distance or not
               speed = p3drag === true ? options.speed * (p3.width() / pWidth) : speedH;
@@ -793,10 +801,7 @@
               }
             } else if (newIndex < options.currentIndex) {
               // moving backward (decreasing number)
-              isBusy = true;
               diff = options.currentIndex - newIndex;
-              options.currentIndex = newIndex;
-              options.movingForward = false;
 
               // set animation speed, depending if user dragged any distance or not
               speed = p0drag === true ? options.speed * (p0.width() / pWidth) : speedH;
@@ -827,6 +832,90 @@
                   });
               }
             }
+          },
+          flip: function(newIndex) {
+            var speed = 'fast';
+            var tmp;
+
+            if (newIndex > options.currentIndex) {
+              // NEXT
+              diff = newIndex - options.currentIndex;
+              startPageAnimation(diff, true, speed);
+              tmp = $('<div>').css({
+                      width: 1 + 'px',
+                      position: 'absolute',
+                      height: target.height() + 'px',
+                      left: parseInt(p2.css('left'), 10) + 'px',
+                      top: 0,
+                      zIndex: 21,
+                      border: '1px solid #ccc',
+                      padding: 0
+                    })
+                    .appendTo(target);
+
+              p2.stop().animate({
+                width: 0
+              }, speed, options.easeIn, function() {
+                tmp.stop().animate({
+                  left: 0
+                }, speed, options.easeIn, function() {
+                  tmp.remove();
+                });
+
+                p3.css(anim.p3out);
+                p3wrap.css(anim.p3wrapOut);
+                updateAfter();
+              });
+            } else if (newIndex < options.currentIndex) {
+              //speed = 2000;
+              diff = options.currentIndex - newIndex;
+              startPageAnimation(diff, false, speed);
+
+              tmp = $('<div>').css({
+                      width: 1 + 'px',
+                      position: 'absolute',
+                      height: target.height() + 'px',
+                      left: 0,
+                      top: 0,
+                      zIndex: 21,
+                      border: '1px solid #ccc',
+                      padding: 0
+                    })
+                    .appendTo(target);
+
+              p1.animate(anim.p1, speed, options.easing);
+              tmp.stop().animate({
+                  left: anim.p0in.left * 2
+                }, speed, options.easing, function() {
+                  tmp.remove();
+                });
+              p1wrap.animate(anim.p1wrap, speed, options.easeIn, function() {                
+                p0.css({
+                  left: anim.p0in.left * 2 - 20 + 'px',
+                  'overflow-y': 'hidden'
+                });
+                p0.animate({
+                  width: anim.p0in.width * 2 - 20 + 'px'
+                }, speed, options.easeIn, function() {
+                  p0.css({
+                    'overflow-y': 'auto'
+                  });
+                  p0wrap.css(anim.p0wrapOut);
+                  updateAfter();
+                });
+              });
+            }
+          }
+        },
+        animation = function(newIndex, type) {
+          animations[type || options.animation](newIndex);
+        },
+        goToPage = function (newIndex) {
+          if (newIndex < options.pageTotal && newIndex >= 0 && !isBusy) {
+            isBusy = true;
+            animation(newIndex);
+            options.currentIndex = newIndex;
+            isBusy = false;
           }
         },
         startHoverAnimation = function (inc) {
@@ -986,6 +1075,7 @@
     autoSize: false,
     $containerW: null,
     $containerH: null,
+    animation: 'leaf', // flip || leaf
     onGotoPage: $.noop,
     easing: 'easeInOutQuad', // easing method for complete transition
     easeIn: 'easeInQuad', // easing method for first half of transition
