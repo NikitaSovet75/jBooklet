@@ -72,10 +72,10 @@
 
   function Booklet(target, inOptions) {    
     var $wrapper = $('<div>', {
-          class: 'b-page'
+          'class': 'b-page'
         }),
         $underWrapper = $('<div>', {
-          class: 'b-wrap'
+          'class': 'b-wrap'
         });
     $underWrapper.appendTo($wrapper);
     var options = inOptions,
@@ -327,54 +327,54 @@
         updateCSSandAnimations = function() {
           // init base css
           css = {
-            wrap: {
-              left: 0,
-              width: pWidth - (options.pagePadding * 2),
-              //height: pHeight - (options.pagePadding * 2),
-              height: pHeight,
-              padding: options.pagePadding,
+            'wrap': {
+              'left': 0,
+              'width': pWidth - (options.pagePadding * 2),
+              //'height': pHeight - (options.pagePadding * 2),
+              'height': pHeight,
+              'padding': options.pagePadding,
               'overflow-y': 'auto',
-              opacity: 1
+              'opacity': 1
             },
-            p0wrap: {
-              right: 0,
-              left: 'auto'
+            'p0wrap': {
+              'right': 0,
+              'left': 'auto'
             },
-            p1: {
-              left: 0,
-              width: pWidth,
-              height: pHeight
+            'p1': {
+              'left': 0,
+              'width': pWidth,
+              'height': pHeight
             },
-            p2: {
-              left: pWidth - 20,
-              width: pWidth,
-              opacity: 1,
-              height: pHeight
+            'p2': {
+              'left': pWidth - 20,
+              'width': pWidth,
+              'opacity': 1,
+              'height': pHeight
             },
-            pN: {
-              left: 0,
-              width: pWidth,
-              height: pHeight
+            'pN': {
+              'left': 0,
+              'width': pWidth,
+              'height': pHeight
             },
-            p0: {
-              left: 0,
-              width: 0,
-              height: pHeight
+            'p0': {
+              'left': 0,
+              'width': 0,
+              'height': pHeight
             },
-            p3: {
-              left: pWidth * 2,
-              width: 0,
-              height: pHeight,
-              paddingLeft: 0
+            'p3': {
+              'left': pWidth * 2,
+              'width': 0,
+              'height': pHeight,
+              'padding-left': 0
             },
-            p4: {
-              left: pWidth - 20,
-              width: pWidth,
-              height: pHeight
+            'p4': {
+              'left': pWidth - 20,
+              'width': pWidth,
+              'height': pHeight
             },
-            pwrap: {
-              hover: {
-                opacity: 0.1,
+            'pwrap': {
+              'hover': {
+                'opacity': 0.1,
                 'overflow-y': 'hidden'
               }
             }
@@ -386,94 +386,137 @@
 
           // init animation params
           anim = {
-            hover: {
-              speed: options.hoverSpeed,
-              size: options.hoverWidth,
-              p2: { width: pWidth - hoverCurlWidth },
-              p3: { left: options.width - hoverFullWidth, width: hoverCurlWidth },
-              p3closed: { left: pWidth - options.hoverWidth, width: hoverCurlWidth },
-              p3wrap: { left: hoverShadowWidth },
-              p2end: { width: pWidth },
-              p2closedEnd: { width: pWidth, left: 0 },
-              p3end: { left: options.width, width: 0 },
-              p3closedEnd: { left: pWidth, width: 0 },
-              p3wrapEnd: { left: 10 },
-              p1: { left: hoverCurlWidth, width: pWidth - hoverCurlWidth },
-              p1wrap: { left: '-' + hoverCurlWidth + 'px' },
-              p0: { left: hoverCurlWidth, width: hoverCurlWidth },
-              p0wrap: { right: hoverShadowWidth },
-              p1end: { left: 0, width: pWidth },
-              p1wrapEnd: { left: 0 },
-              p0end: { left: 0, width: 0 },
-              p0wrapEnd: { right: 0 }
+            'hover': {
+              'speed': options.hoverSpeed,
+              'size': options.hoverWidth,
+              'p2': {
+                'width': pWidth - hoverCurlWidth
+              },
+              'p3': {
+                'left': options.width - hoverFullWidth,
+                'width': hoverCurlWidth
+              },
+              'p3closed': {
+                'left': pWidth - options.hoverWidth,
+                'width': hoverCurlWidth
+              },
+              'p3wrap': {
+                'left': hoverShadowWidth
+              },
+              'p2end': {
+                'width': pWidth
+              },
+              'p2closedEnd': {
+                'width': pWidth,
+                'left': 0
+              },
+              'p3end': {
+                'left': options.width,
+                'width': 0
+              },
+              'p3closedEnd': {
+                'left': pWidth,
+                'width': 0
+              },
+              'p3wrapEnd': {
+                'left': 10
+              },
+              'p1': {
+                'left': hoverCurlWidth,
+                'width': pWidth - hoverCurlWidth
+              },
+              'p1wrap': {
+                'left': '-' + hoverCurlWidth + 'px'
+              },
+              'p0': {
+                'left': hoverCurlWidth,
+                'width': hoverCurlWidth
+              },
+              'p0wrap': {
+                'right': hoverShadowWidth
+              },
+              'p1end': {
+                'left': 0,
+                'width': pWidth
+              },
+              'p1wrapEnd': {
+                'left': 0
+              },
+              'p0end': {
+                'left': 0,
+                'width': 0
+              },
+              'p0wrapEnd': {
+                'right': 0
+              }
             },
-            // forward
-            p2: {
-              width: 0
+            // Forward.
+            'p2': {
+              'width': 0
             },
-            p2closed: {
-              width: 0,
-              left: pWidth
+            'p2closed': {
+              'width': 0,
+              'left': pWidth
             },
-            p4closed: {
-              left: pWidth
+            'p4closed': {
+              'left': pWidth
             },
-            p3in: {
-              left: pWidthH,
-              width: pWidthH,
-              paddingLeft: options.shadowBtmWidth
+            'p3in': {
+              'left': pWidthH,
+              'width': pWidthH,
+              'padding-left': options.shadowBtmWidth
             },
-            p3inDrag: {
-              left: pWidth / 4,
-              width: pWidth * 0.75,
-              paddingLeft: options.shadowBtmWidth
+            'p3inDrag': {
+              'left': pWidth / 4,
+              'width': pWidth * 0.75,
+              'padding-left': options.shadowBtmWidth
             },
-            p3out: {
-              left: 0,
-              width: pWidth,
-              paddingLeft: 0
+            'p3out': {
+              'left': 0,
+              'width': pWidth,
+              'padding-left': 0
             },
-            p3wrapIn: {
-              left: options.shadowBtmWidth
+            'p3wrapIn': {
+              'left': options.shadowBtmWidth
             },
-            p3wrapOut: {
-              left: 0
+            'p3wrapOut': {
+              'left': 0
             },
-            // backwards
-            p1: {
-              left: pWidth,
-              width: 0
+            // Backwards.
+            'p1': {
+              'left': pWidth,
+              'width': 0
             },
-            p1wrap: {
-              left: pWidthN
+            'p1wrap': {
+              'left': pWidthN
             },
-            p0: {
-              left: pWidth,
-              width: pWidth
+            'p0': {
+              'left': pWidth,
+              'width': pWidth
             },
-            p0in: {
-              left: pWidthH,
-              width: pWidthH
+            'p0in': {
+              'left': pWidthH,
+              'width': pWidthH
             },
-            p0out: {
-              left: pWidth,
-              width: pWidth
+            'p0out': {
+              'left': pWidth,
+              'width': pWidth
             },
-            p0outClosed: {
-              left: 0,
-              width: pWidth
+            'p0outClosed': {
+              'left': 0,
+              'width': pWidth
             },
-            p2back: {
-              left: 0
+            'p2back': {
+              'left': 0
             },
-            p0wrapDrag: {
-              right: 0
+            'p0wrapDrag': {
+              'right': 0
             },
-            p0wrapIn: {
-              right: options.shadowBtmWidth
+            'p0wrapIn': {
+              'right': options.shadowBtmWidth
             },
-            p0wrapOut: {
-              right: 0
+            'p0wrapOut': {
+              'right': 0
             }
           };
         },
@@ -532,7 +575,9 @@
 
                 // set values
                 p3.width(curlW);
-                p3wrap.css({left: shadowW});
+                p3wrap.css({
+                  'left': shadowW
+                });
                 p2.width(underW);
               },
               stop: function () {
@@ -549,15 +594,15 @@
 
             // implement draggable backwards
             p0.draggable({
-              axis: 'x',
+              'axis': 'x',
               //containment: 'parent',
-              containment: [
+              'containment': [
                 target.offset().left + hoverCurlWidth,
                 0,
                 target.offset().left + options.width,
                 pHeight
               ],
-              drag: function (event, ui) {
+              'drag': function (event, ui) {
                 p0drag = true;
                 p0.removeClass('b-grab').addClass('b-grabbing');
 
@@ -585,7 +630,7 @@
                 p1.css({left: curlLeft, width: pWidth - curlLeft});
                 p1wrap.css({left: p1wrapLeft});
               },
-              stop: function () {
+              'stop': function () {
                 endHoverAnimation(true);
                 if (fullPercent > options.hoverThreshold) {
                   prev();
@@ -842,14 +887,14 @@
               diff = newIndex - options.currentIndex;
               startPageAnimation(diff, true, speed);
               tmp = $('<div>').css({
-                      width: 1 + 'px',
-                      position: 'absolute',
-                      height: target.height() + 'px',
-                      left: parseInt(p2.css('left'), 10) + 'px',
-                      top: 0,
-                      zIndex: 21,
-                      border: '1px solid #ccc',
-                      padding: 0
+                      'width': 1 + 'px',
+                      'position': 'absolute',
+                      'height': target.height() + 'px',
+                      'left': parseInt(p2.css('left'), 10) + 'px',
+                      'top': 0,
+                      'z-index': 21,
+                      'border': '1px solid #ccc',
+                      'padding': 0
                     })
                     .appendTo(target);
 
@@ -872,14 +917,14 @@
               startPageAnimation(diff, false, speed);
 
               tmp = $('<div>').css({
-                      width: 1 + 'px',
-                      position: 'absolute',
-                      height: target.height() + 'px',
-                      left: 0,
-                      top: 0,
-                      zIndex: 21,
-                      border: '1px solid #ccc',
-                      padding: 0
+                      'width': 1 + 'px',
+                      'position': 'absolute',
+                      'height': target.height() + 'px',
+                      'left': 0,
+                      'top': 0,
+                      'z-index': 21,
+                      'border': '1px solid #ccc',
+                      'padding': 0
                     })
                     .appendTo(target);
 
@@ -891,7 +936,7 @@
                 });
               p1wrap.animate(anim.p1wrap, speed, options.easeIn, function() {                
                 p0.css({
-                  left: anim.p0in.left * 2 - 20 + 'px',
+                  'left': anim.p0in.left * 2 - 20 + 'px',
                   'overflow-y': 'hidden'
                 });
                 p0.animate({
