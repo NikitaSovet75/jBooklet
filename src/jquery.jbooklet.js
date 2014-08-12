@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.4.0
+ * Version : 2.4.2
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -551,7 +551,7 @@
               axis: 'x',
               containment: [
                 target.offset().left, 0,
-                p2.offset().left + pWidth - hoverFullWidth,
+                (p2.offset() !== undefined ? p2.offset().left : 0) + pWidth - hoverFullWidth,
                 pHeight
               ],
               drag: function (event, ui) {
@@ -791,7 +791,7 @@
 
           if (!isBusy) {
             if (isPlaying && options.currentIndex + 2 >= options.pageTotal) {
-              index = options.pageTotal - 2;
+              index = options.pageTotal - 1;
             } else {
               index = options.currentIndex + 2;
             }
@@ -955,12 +955,15 @@
         animation = function(newIndex, type) {
           animations[type || options.animation](newIndex);
         },
-        goToPage = function (newIndex) {
+        goToPage = function (newIndex, manualSwitch) {
+          manualSwitch = manualSwitch || false;
+
           if (newIndex < options.pageTotal && newIndex >= 0 && !isBusy) {
-            isBusy = true;
+            if (!manualSwitch) {
+              isBusy = true;
+            }
             animation(newIndex);
             options.currentIndex = newIndex;
-            isBusy = false;
           }
         },
         startHoverAnimation = function (inc) {
@@ -1029,7 +1032,11 @@
               target.find('.b-page-' + (currIndex + 1) + ' .b-wrap').show().css(css.wrap);
 
               if (isHoveringRight) {
-                p3.css({ 'left': options.width - 40, 'width': 20, 'padding-left': 10 });
+                p3.css({
+                  'left': options.width - 40,
+                  'width': 20,
+                  'padding-left': 10
+                });
               }
             } else if (!inc && diff > 2) {
               // initialize previous 2 pages, if jumping backwards in the book
@@ -1041,8 +1048,13 @@
               p0wrap.css(css.p0wrap);
 
               if (isHoveringLeft) {
-                p0.css({ left: 10, width: 40 });
-                p0wrap.css({ right: 10 });
+                p0.css({
+                  left: 10,
+                  width: 40
+                });
+                p0wrap.css({
+                  right: 10
+                });
               }
             }
         },
@@ -1059,12 +1071,14 @@
       next: next,
       prev: prev,
       gotopage: function (index) {
+        console.log('gotopage');
+        console.log('index: ' + index);
         // validate inputs
         if (typeof index === 'string') {
           if (index === 'first') {
             index = 0;
           } else if (index === 'last') {
-            index = options.pageTotal - 2;
+            index = options.pageTotal - 1;
           } else {
             this.gotopage(parseInt(index));
           }
@@ -1076,12 +1090,14 @@
           return;
         }
 
+        console.log('index: ' + index);
         // adjust for odd page
         if (index % 2 !== 0) {
           index -= 1;
         }
+        console.log('index: ' + index);
 
-        goToPage(index);
+        goToPage(index, true);
       },
       add: addPage,
       remove: removePage,
