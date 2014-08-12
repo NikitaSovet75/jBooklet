@@ -1071,8 +1071,6 @@
       next: next,
       prev: prev,
       gotopage: function (index) {
-        console.log('gotopage');
-        console.log('index: ' + index);
         // validate inputs
         if (typeof index === 'string') {
           if (index === 'first') {
@@ -1090,12 +1088,10 @@
           return;
         }
 
-        console.log('index: ' + index);
         // adjust for odd page
         if (index % 2 !== 0) {
           index -= 1;
         }
-        console.log('index: ' + index);
 
         goToPage(index, true);
       },
