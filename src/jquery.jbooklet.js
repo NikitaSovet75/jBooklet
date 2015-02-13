@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.4.2
+ * Version : 2.4.3
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -971,7 +971,7 @@
 
           if (options.hovers || options.manual) {
             if (inc) {
-              if (!isBusy && !isHoveringRight && !isHoveringLeft && !p3drag && options.currentIndex + 2 <= options.pageTotal - 2) {
+              if (!isBusy && !isHoveringRight && !isHoveringLeft && !p3drag && options.currentIndex + 2 <= options.pageTotal - 1) {
                 p2.stop().animate(anim.hover.p2, anim.hover.speed, options.easing);
                 p3.addClass('b-grab');
                 p3.stop().animate(anim.hover.p3, anim.hover.speed, options.easing);
@@ -999,7 +999,7 @@
         endHoverAnimation = function (inc) {
           if (options.hovers || options.manual) {
             if (inc) {
-              if (!isBusy && isHoveringRight && !p3drag && options.currentIndex + 2 <= options.pageTotal - 2) {
+              if (!isBusy && isHoveringRight && !p3drag && options.currentIndex + 2 <= options.pageTotal - 1) {
                 p2.stop().animate(anim.hover.p2end, anim.hover.speed, options.easing);
                 p3.stop().animate(anim.hover.p3end, anim.hover.speed, options.easing);
                 p3wrap.stop().animate(anim.hover.p3wrapEnd, anim.hover.speed, options.easing);
