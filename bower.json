@@ -16,7 +16,7 @@
     "flipbook"
   ],
   "license": "MIT",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "ignore": [
     "**/.*",
     "node_modules",
