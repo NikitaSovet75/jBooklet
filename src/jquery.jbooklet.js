@@ -4,7 +4,7 @@
  *
  * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
  *
- * Version : 2.4.5
+ * Version : 2.4.6
  *
  * Originally based on the work of:
  *	1) Charles Mangin (http://clickheredammit.com/pageflip/)
@@ -286,6 +286,8 @@
         },
         updateOptions = function(newOptions) {
           var didUpdate = false;
+          var targetWidth = 0;
+          var targetHeight = 0;
 
           // update options if newOptions have been passed in
           if (newOptions !== null && newOptions !== undefined) {
@@ -312,8 +314,16 @@
 
           // percentage resizing
           target.on('resize', function() {
+            var $target = $(target);
+            var w = $target.width();
+            var h = $target.height();
+
             if (options.autoSize && options.$containerW && options.$containerH) {
-              updateSize();
+              if (targetWidth !== w || targetHeight !== h) {
+                targetWidth = w;
+                targetHeight = h;
+                updateSize();
+              }
             }
           });
 
